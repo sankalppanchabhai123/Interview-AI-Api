@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, use } from "react";
+import { useAuth } from "../hooks/useAuth";
+import {useNavigate} from "react-router-dom"
 
+// ── Icons ──────────────────────────────────────────────────────────────────────
 const EyeIcon = ({ open }) => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     {open ? (
@@ -32,184 +35,162 @@ const GithubIcon = () => (
   </svg>
 );
 
+// ── Component ──────────────────────────────────────────────────────────────────
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [emailFocused, setEmailFocused] = useState(false);
   const [passFocused, setPassFocused] = useState(false);
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate()
+
+  const { handleLogin, loading, setLoading } = useAuth();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
+    try {
+      await handleLogin({ email, password });
+    } catch (err) {
+      console.error("Login error:", err);
+    } finally {
+      setLoading(false);
+      navigate("/");
+    }
   };
 
-  const inputStyle = (focused) => ({
-    width: "100%",
-    background: "rgba(255,255,255,0.07)",
-    border: `1px solid ${focused ? "rgba(139,92,246,0.7)" : "rgba(255,255,255,0.12)"}`,
-    borderRadius: 12,
-    padding: "12px 16px",
-    color: "#ffffff",
-    fontSize: 14,
-    outline: "none",
-    boxSizing: "border-box",
-    boxShadow: focused ? "0 0 0 3px rgba(139,92,246,0.18)" : "none",
-    transition: "all 0.2s",
-  });
+  // Shared input class — dynamic focus ring
+  const inputClass = (focused) =>
+    `w-full bg-white/[0.07] rounded-xl px-4 py-3 text-white text-sm outline-none border transition-all placeholder:text-white/20
+    ${focused
+      ? "border-violet-500/70 shadow-[0_0_0_3px_rgba(139,92,246,0.18)]"
+      : "border-white/10"
+    }`;
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#0b0b12",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 24,
-      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      {/* Ambient glows */}
-      <div style={{ position: "absolute", top: "-10%", left: "-5%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(124,58,237,0.18) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: "-10%", right: "-5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(99,102,241,0.14) 0%, transparent 70%)", pointerEvents: "none" }} />
+    <div className="min-h-screen bg-[#0b0b12] flex items-center justify-center p-6 font-sans relative overflow-hidden">
 
-      <div style={{ position: "relative", width: "100%", maxWidth: 420 }}>
-        <div style={{
-          background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: 20,
-          padding: "36px 32px 32px",
-        }}>
+      {/* Ambient glows */}
+      <div className="absolute -top-[10%] -left-[5%] w-[500px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.18)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute -bottom-[10%] -right-[5%] w-[400px] h-[400px] rounded-full bg-[radial-gradient(circle,rgba(99,102,241,0.14)_0%,transparent_70%)] pointer-events-none" />
+
+      <div className="relative w-full max-w-[420px]">
+
+        {/* Card */}
+        <div className="bg-white/[0.04] border border-white/10 rounded-2xl px-8 py-9">
 
           {/* Logo */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 28 }}>
-            <div style={{
-              width: 38, height: 38, borderRadius: 10,
-              background: "linear-gradient(135deg, #7c3aed, #4338ca)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 16px rgba(124,58,237,0.4)",
-            }}>
+          <div className="flex items-center gap-2.5 mb-7">
+            <div className="w-[38px] h-[38px] rounded-[10px] bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center shadow-[0_4px_16px_rgba(124,58,237,0.4)]">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path d="M12 2L2 7l10 5 10-5-10-5z" fill="white" />
                 <path d="M2 17l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 <path d="M2 12l10 5 10-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <span style={{ color: "#ffffff", fontWeight: 700, fontSize: 18, letterSpacing: "-0.3px" }}>Nucleus</span>
+            <span className="text-white font-bold text-lg tracking-tight">Nucleus</span>
           </div>
 
           {/* Heading */}
-          <h1 style={{ color: "#ffffff", fontSize: 26, fontWeight: 700, margin: "0 0 6px", letterSpacing: "-0.5px" }}>Welcome back</h1>
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, margin: "0 0 28px", fontWeight: 400 }}>Sign in to continue to your workspace</p>
+          <h1 className="text-white text-[26px] font-bold mb-1.5 tracking-tight">Welcome back</h1>
+          <p className="text-white/45 text-sm mb-7">Sign in to continue to your workspace</p>
 
           {/* Social buttons */}
-          <div style={{ display: "flex", gap: 10, marginBottom: 22 }}>
-            {[
-              { icon: <GoogleIcon />, label: "Google" },
-              { icon: <GithubIcon />, label: "GitHub" },
-            ].map(({ icon, label }) => (
-              <button key={label} style={{
-                flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                padding: "10px 14px", borderRadius: 12,
-                border: "1px solid rgba(255,255,255,0.1)",
-                background: "rgba(255,255,255,0.05)",
-                color: "rgba(255,255,255,0.8)", fontSize: 13.5, fontWeight: 500,
-                cursor: "pointer",
-              }}>
+          <div className="flex gap-2.5 mb-5">
+            {[{ icon: <GoogleIcon />, label: "Google" }, { icon: <GithubIcon />, label: "GitHub" }].map(({ icon, label }) => (
+              <button key={label} type="button"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-xl border border-white/10 bg-white/5 text-white/80 text-[13.5px] font-medium cursor-pointer hover:bg-white/10 transition-colors"
+              >
                 {icon} {label}
               </button>
             ))}
           </div>
 
           {/* Divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 22 }}>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
-            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase" }}>or</span>
-            <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px bg-white/[0.08]" />
+            <span className="text-white/30 text-[11px] font-medium tracking-widest uppercase">or</span>
+            <div className="flex-1 h-px bg-white/[0.08]" />
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-4">
 
             {/* Email */}
-            <div style={{ marginBottom: 16 }}>
-              <label style={{ display: "block", color: "rgba(255,255,255,0.55)", fontSize: 11, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: 7 }}>
+            <div>
+              <label className="block text-white/55 text-[11px] font-semibold tracking-widest uppercase mb-1.5">
                 Email
               </label>
               <input
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setEmailFocused(true)}
                 onBlur={() => setEmailFocused(false)}
                 placeholder="you@example.com"
-                style={inputStyle(emailFocused)}
+                className={inputClass(emailFocused)}
               />
             </div>
 
             {/* Password */}
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 7 }}>
-                <label style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, fontWeight: 600, letterSpacing: "0.07em", textTransform: "uppercase" }}>
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="text-white/55 text-[11px] font-semibold tracking-widest uppercase">
                   Password
                 </label>
-                <a href="#" style={{ color: "#a78bfa", fontSize: 12, textDecoration: "none", fontWeight: 500 }}>Forgot password?</a>
+                <a href="#" className="text-violet-400 text-xs no-underline font-medium hover:text-violet-300">
+                  Forgot password?
+                </a>
               </div>
-              <div style={{ position: "relative" }}>
+              <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={e => setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   onFocus={() => setPassFocused(true)}
                   onBlur={() => setPassFocused(false)}
                   placeholder="••••••••"
-                  style={{ ...inputStyle(passFocused), paddingRight: 44 }}
+                  className={`${inputClass(passFocused)} pr-11`}
                 />
-                <button type="button" onClick={() => setShowPassword(!showPassword)} style={{
-                  position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)",
-                  background: "none", border: "none", color: "rgba(255,255,255,0.4)",
-                  cursor: "pointer", padding: 2, display: "flex", alignItems: "center",
-                }}>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none text-white/40 cursor-pointer flex items-center p-0.5"
+                >
                   <EyeIcon open={showPassword} />
                 </button>
               </div>
             </div>
 
             {/* Remember me */}
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 22 }}>
-              <div onClick={() => setRemember(!remember)} style={{
-                width: 18, height: 18, borderRadius: 5, flexShrink: 0,
-                border: `1.5px solid ${remember ? "#7c3aed" : "rgba(255,255,255,0.2)"}`,
-                background: remember ? "#7c3aed" : "rgba(255,255,255,0.05)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", transition: "all 0.2s",
-                boxShadow: remember ? "0 0 10px rgba(124,58,237,0.45)" : "none",
-              }}>
+            <div className="flex items-center gap-2.5">
+              <div
+                onClick={() => setRemember(!remember)}
+                className={`w-[18px] h-[18px] rounded-[5px] flex-shrink-0 border-[1.5px] flex items-center justify-center cursor-pointer transition-all ${remember
+                  ? "border-violet-600 bg-violet-600 shadow-[0_0_10px_rgba(124,58,237,0.45)]"
+                  : "border-white/20 bg-white/5"
+                  }`}
+              >
                 {remember && (
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                     <path d="M2 5l2.5 2.5 3.5-4" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 )}
               </div>
-              <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 13.5, userSelect: "none" }}>Keep me signed in</span>
+              <span className="text-white/45 text-[13.5px] select-none">Keep me signed in</span>
             </div>
 
             {/* Submit */}
-            <button type="submit" disabled={loading} style={{
-              width: "100%", padding: "13px 20px", borderRadius: 12, border: "none",
-              background: "linear-gradient(135deg, #7c3aed, #4338ca)",
-              color: "#ffffff", fontSize: 14, fontWeight: 600, cursor: "pointer",
-              boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              opacity: loading ? 0.8 : 1,
-            }}>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full py-3.5 px-5 rounded-xl border-none bg-gradient-to-br from-violet-600 to-indigo-700 text-white text-sm font-semibold cursor-pointer shadow-[0_4px_20px_rgba(124,58,237,0.4)] flex items-center justify-center gap-2 transition-all hover:brightness-110 ${loading ? "opacity-80" : "opacity-100"}`}
+            >
               {loading ? (
                 <>
-                  <svg style={{ animation: "spin 1s linear infinite" }} width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <svg className="animate-spin" width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,0.3)" strokeWidth="4" />
                     <path fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
@@ -226,22 +207,19 @@ export default function Login() {
             </button>
           </form>
 
-          <p style={{ textAlign: "center", color: "rgba(255,255,255,0.35)", fontSize: 13, marginTop: 22 }}>
+          <p className="text-center text-white/35 text-[13px] mt-5">
             Don't have an account?{" "}
-            <a href="/register" style={{ color: "#a78bfa", textDecoration: "none", fontWeight: 500 }}>Create one free</a>
+            <a href="/register" className="text-violet-400 no-underline font-medium hover:text-violet-300">
+              Create one free
+            </a>
           </p>
         </div>
 
-        <p style={{ textAlign: "center", color: "rgba(255,255,255,0.15)", fontSize: 11, marginTop: 18 }}>
+        {/* Footer note */}
+        <p className="text-center text-white/15 text-[11px] mt-4">
           Protected by 256-bit encryption · SOC 2 certified
         </p>
       </div>
-
-      <style>{`
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        input::placeholder { color: rgba(255,255,255,0.22) !important; }
-        input:-webkit-autofill { -webkit-box-shadow: 0 0 0 100px #1a1030 inset !important; -webkit-text-fill-color: #fff !important; }
-      `}</style>
     </div>
   );
 }
