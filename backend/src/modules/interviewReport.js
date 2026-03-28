@@ -16,9 +16,10 @@ const mainSchema = new mongooese.Schema({
         min: 0,
         max: 100,
     },
-    interviewQuestions: [interviewQuestion],
+    technicalQuestions: [interviewQuestion],
     behaviralQuestions: [behaviralQuestion],
-
+    skillGaps: [skillGapSchema],
+    preparationPlan: [preparationPlanSchema],
 })
 
 const interviewQuestion = new mongooese.Schema({
@@ -55,6 +56,35 @@ const behaviralQuestion = new mongooese.Schema({
     _id: false,
 })
 
-const interviewSchema = mongooese.model("interview data", mainSchema);
+const skillGapSchema = new mongooes.Schema({
+    skill: {
+        type: String,
+        required: [true, "Skill is required"]
+    },
+    severity: {
+        type: String,
+        enum: ["low", "medium", "high"],
+        requred: [true, "Severity is required"]
+    }
+}, {
+    _id: false,
+})
 
-module.exports = interviewSchema;
+const preparationPlanSchema = new mongooese.Schema({
+    day: {
+        type: Number,
+        required: [true, "Day is required"]
+    },
+    focus: {
+        type: String,
+        required: [true, "Focus is required"]
+    },
+    taks: {
+        type: String,
+        required: [true, "Task is required"]
+    }
+})
+
+const interviewReportModel = mongooese.model("interviewReport", mainSchema);
+
+module.exports = interviewReportModel;
