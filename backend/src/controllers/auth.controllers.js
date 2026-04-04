@@ -3,6 +3,17 @@ const userModel = require("../modules/schema");
 const bcrypt = require("bcryptjs")
 const blacklistToken = require("../modules/tokenblocklist")
 
+function getAuthCookieOptions() {
+    const isProd = process.env.NODE_ENV === "production";
+
+    return {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        maxAge: 24 * 60 * 60 * 1000,
+    };
+}
+
 
 /**
  * @route POST /api/auth/register
@@ -41,7 +52,7 @@ async function registerUserController(req, res) {
             username: User.username,
         }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        res.cookie("token", token);
+        res.cookie("token", token, getAuthCookieOptions());
 
         res.status(201).json({
             message: "User registered successfully",
@@ -82,7 +93,7 @@ async function loginUserController(req, res) {
         username: User.username,
     }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-    res.cookie("token", token);
+    res.cookie("token", token, getAuthCookieOptions());
 
     res.status(200).json({
         message: "user login successfully",
@@ -101,7 +112,12 @@ async function logoutUserController(req, res) {
         await blacklistToken.create({ token })
     }
 
-    res.clearCookie("token");
+    const cookieOptions = getAuthCookieOptions();
+    res.clearCookie("token", {
+        httpOnly: cookieOptions.httpOnly,
+        secure: cookieOptions.secure,
+        sameSite: cookieOptions.sameSite,
+    });
 
     res.status(200).json({
         message: "User logout successfully"
