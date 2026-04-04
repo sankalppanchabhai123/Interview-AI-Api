@@ -9,6 +9,7 @@ const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
     "https://interview-ai-q2owstudd-sankalps-projects-d7a0c779.vercel.app/",
+    "https://interview-ai-apiapp.vercel.app/",
     ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(",").map((origin) => origin.trim()).filter(Boolean) : []),
 ];
 
