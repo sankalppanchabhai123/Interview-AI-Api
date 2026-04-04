@@ -3,25 +3,14 @@ import { useAuth } from "../hooks/useAuth";
 import { Navigate } from "react-router-dom";
 
 export const UserAuth = ({ children }) => {
-    const { user, getuser, loading } = useAuth();
-    const [checkingAuth, setCheckingAuth] = useState(true);
+    const { user, loading } = useAuth();
 
-    useEffect(() => {
-        const checkAuth = async () => {
-            try {
-                await getuser();
-            } finally {
-                setCheckingAuth(false);
-            }
-        };
-
-        checkAuth();
-    }, []);
-
-    if (loading || checkingAuth) {
+    // Wait for initial auth check from context provider
+    if (loading) {
         return null;
     }
 
+    // If no user after auth check from context, redirect to login
     if (!user) {
         return <Navigate to="/login" replace />;
     }

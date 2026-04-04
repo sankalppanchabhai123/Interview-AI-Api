@@ -8,8 +8,7 @@ const app = express();
 const allowedOrigins = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://interview-ai-q2owstudd-sankalps-projects-d7a0c779.vercel.app/",
-    "https://interview-ai-apiapp.vercel.app/",
+    "https://interview-ai-api-nu.vercel.app",
     ...(process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(",").map((origin) => origin.trim()).filter(Boolean) : []),
 ];
 
@@ -21,7 +20,7 @@ app.use(cors({
         }
 
         if (allowedOrigins.includes(origin)) {
-            return callback(null, true);
+            return callback(null, origin);
         }
 
         return callback(new Error("Not allowed by CORS"));

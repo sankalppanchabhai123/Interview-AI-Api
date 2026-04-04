@@ -93,7 +93,8 @@ async function loginUserController(req, res) {
         username: User.username,
     }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-    res.cookie("token", token, getAuthCookieOptions());
+    const cookieOptions = getAuthCookieOptions();
+    res.cookie("token", token, cookieOptions);
 
     res.status(200).json({
         message: "user login successfully",

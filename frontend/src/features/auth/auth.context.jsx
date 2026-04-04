@@ -13,9 +13,10 @@ export const Authprovider = ({ children }) => {
             try {
                 setLoading(true);
                 const res = await getUser();
-                setUser(res);
+                setUser(res?.user ?? null);
             } catch (err) {
-                throw err;
+                // User not authenticated on initial load - this is expected
+                setUser(null);
             } finally {
                 setLoading(false);
             }
