@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://interview-test-eosin-three.vercel.app/interview",
+    baseURL: "https://interview-test-eosin-three.vercel.app/api/interview",
     withCredentials: true,
 });
 
