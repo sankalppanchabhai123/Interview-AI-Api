@@ -1,4 +1,4 @@
-const { tempResult: generateInterviewReport } = require("../services/test");
+const { tempResult: generateInterviewReport, generateResumePdf } = require("../services/test");
 const { interviewReportModel } = require("../modules/interviewReport");
 
 async function generateInterviewReportController(req, res) {
@@ -91,9 +91,60 @@ async function getInterviewReportByIdController(req, res) {
     });
 }
 
+async function generateResumePdfController(req, res) {
+    try {
+        const { interviewReportId } = req.params;
+
+        const interviewReport = await interviewReportModel.findById(interviewReportId).lean();
+
+        if (!interviewReport) {
+            return res.status(404).json({ message: "No such report exists" });
+        }
+
+        // Support legacy documents that used lowercase keys.
+        const resume = interviewReport.resume;
+        const selfDescription = interviewReport.selfDescription ?? interviewReport.selfdescription;
+        const jobDescription = interviewReport.jobDescription ?? interviewReport.jobdescription;
+
+        const missingFields = [];
+        if (!resume) missingFields.push("resume");
+        if (!selfDescription) missingFields.push("selfDescription");
+        if (!jobDescription) missingFields.push("jobDescription");
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                message: "Report does not contain all required fields for PDF generation",
+                missingFields,
+            });
+        }
+
+        const pdfBuffer = await generateResumePdf({
+            resume,
+            selfDescription,
+            jobDescription,
+        });
+
+        const pdfBytes = Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
+
+        res.set({
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="Resume_${interviewReportId}.pdf"`,
+            "Content-Length": String(pdfBytes.length),
+        });
+
+        return res.send(pdfBytes);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Failed to generate resume PDF",
+            error: error.message,
+        });
+    }
+}
+
 
 module.exports = {
     generateInterviewReportController,
     getMyInterviewReportsController,
     getInterviewReportByIdController,
+    generateResumePdfController,
 }

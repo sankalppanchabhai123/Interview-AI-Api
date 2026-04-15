@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/hooks/useAuth";
 
@@ -56,9 +57,21 @@ const workflowAnimationClasses = [
     "animate-fade-up-delay-3",
 ];
 
+const sampleReportData = {
+    matchScore: 86,
+    topRole: "Frontend Developer",
+    technicalQuestions: 12,
+    behavioralQuestions: 8,
+    sampleTechnicalQuestion: "How would you optimize rendering performance in a large React dashboard with frequent state updates?",
+    sampleBehavioralQuestion: "Tell me about a time you received critical feedback and how you used it to improve project delivery.",
+    coreSkills: ["React", "JavaScript", "State Management", "API Integration"],
+    skillGaps: ["System Design", "Performance Optimization", "Testing Strategy"],
+};
+
 export default function Home() {
     const navigate = useNavigate();
-    const { user, handleLogout } = useAuth();
+    const { user, handleLogout, loading } = useAuth();
+    const [showSampleReport, setShowSampleReport] = useState(false);
 
     const onLogout = async () => {
         try {
@@ -68,6 +81,14 @@ export default function Home() {
         }
     };
 
+    const openSampleReport = () => {
+        setShowSampleReport(true);
+    };
+
+    const closeSampleReport = () => {
+        setShowSampleReport(false);
+    };
+
     return (
         <div className="min-h-screen bg-[#3f73e8] font-['Poppins',sans-serif] text-white p-[clamp(14px,2vw,22px)_clamp(12px,2vw,20px)_28px] relative overflow-hidden">
             <div className="max-w-265 mx-auto relative pt-20 sm:pt-22">
@@ -75,10 +96,12 @@ export default function Home() {
                 <div className="absolute -bottom-[16%] -right-[7%] w-100 h-100 rounded-full bg-[radial-gradient(circle,rgba(18,35,96,0.08)_0%,transparent_70%)] pointer-events-none animate-float-soft" />
                 {/* Navigation Pill */}
                 <header className="fixed top-5 left-1/2 z-50 w-[min(1100px,calc(100%-1.5rem))] -translate-x-1/2 min-h-12.5 rounded-full bg-[rgba(164,189,255,0.42)] backdrop-blur-[6px] shadow-[0_10px_30px_rgba(6,25,78,0.18),inset_0_1px_0_rgba(255,255,255,0.32)] border border-[rgba(221,233,255,0.32)] flex items-center justify-between p-[5px_clamp(16px,2.2vw,26px)] gap-1 animate-fade-up">
-                    <div className="flex items-center gap-1.5 font-bold text-[clamp(17px,2vw,24px)] tracking-[0.2px] text-[#f7fbff] animate-fade-up-delay-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#f2f6ff] shadow-[0_0_0_4px_rgba(255,255,255,0.06)] animate-glow-pulse" />
-                        <span>InterviewAI</span>
-                    </div>
+                    <Link to="/" className="no-underline">
+                        <div className="flex items-center gap-1.5 font-bold text-[clamp(17px,2vw,24px)] tracking-[0.2px] text-[#f7fbff] animate-fade-up-delay-1 cursor-pointer hover:opacity-80 transition-opacity">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#f2f6ff] shadow-[0_0_0_4px_rgba(255,255,255,0.06)] animate-glow-pulse" />
+                            <span>InterviewAI</span>
+                        </div>
+                    </Link>
 
                     <nav className="flex items-center gap-1.5 text-[clamp(13px,1.25vw,17px)] font-semibold animate-fade-up-delay-2">
                         {user ? (
@@ -106,14 +129,14 @@ export default function Home() {
                 </header>
 
                 {/* Hero Section */}
-                <section className="flex flex-col items-center text-center pt-[clamp(12px,1.3vw,18px)] px-2.5">
+                <section className="flex flex-col items-center text-center pt-[clamp(18px,1.8vw,28px)] px-2.5">
                     <h1 className="m-0 max-w-225 tracking-[-1.2px] font-bold text-[#f6f9ff] animate-fade-up leading-none">
                         <span className="block text-[clamp(34px,3.6vw,48px)] animate-fade-up">Crack Interviews With</span>
                         <br />
                         <span className="block mt-[-0.08em] text-[clamp(48px,5.4vw,72px)] text-[#071426] animate-fade-up-delay-1">AI-Powered Preparation</span>
                     </h1>
 
-                    <p className="mt-[clamp(15px,2.2vw,26px)] mb-0 max-w-190 text-[clamp(16px,1.55vw,23px)] leading-tight font-normal text-[#071426] animate-fade-up-delay-2">
+                    <p className="mt-3 mb-0 text-[clamp(14px,1.5vw,19px)] leading-relaxed font-sans font-semibold text-[#0f172a] max-w-3xl mx-auto">
                         Paste your job description, share your background, and upload your resume
                         <br />
                         to generate a personalized interview report and preparation roadmap.
@@ -131,6 +154,7 @@ export default function Home() {
                         </Link>
                         <button
                             type="button"
+                            onClick={openSampleReport}
                             className="border border-[#141414] rounded-full bg-[#f3f3f1] text-[#0f1216] p-[clamp(9px,1.1vw,13px)_clamp(22px,2.8vw,34px)] text-[clamp(14px,1.18vw,19px)] font-bold cursor-pointer hover-zoom"
                         >
                             View Sample Report
@@ -154,7 +178,7 @@ export default function Home() {
                         <h2 className="m-0 text-[#f6f9ff] text-[clamp(26px,3vw,40px)] font-bold leading-tight animate-fade-up">
                             Built for Every Interview Stage
                         </h2>
-                        <p className="mt-3 text-[clamp(14px,1.45vw,18px)] leading-tight text-[#0f172a] animate-fade-up-delay-1">
+                        <p className="mt-3 text-[clamp(14px,1.45vw,18px)] leading-relaxed font-sans font-semibold text-[#090e1a] animate-fade-up-delay-1">
                             InterviewAI helps you identify skill gaps, build a role-specific preparation roadmap,
                             and produce ATS-friendly resume improvements for better interview outcomes.
                         </p>
@@ -164,7 +188,7 @@ export default function Home() {
                         {insightCards.map((card, index) => (
                             <article
                                 key={card.title}
-                                className={`rounded-[26px] border border-[#1a1a1a] bg-[#f7f9ff] text-[#09111f] shadow-[0_16px_35px_rgba(17,42,107,0.2)] p-6 hover-zoom`}
+                                className={`rounded-[26px] border border-[#1a1a1a] bg-[#f7f9ff] text-[#09111f] shadow-[0_16px_35px_rgba(17,42,107,0.2)] p-6 hover-lift `}
                             >
                                 <div className="w-11 h-11 rounded-full bg-[#dce6fb] flex items-center justify-center mb-4 shadow-[inset_0_0_0_1px_rgba(26,42,73,0.14)]">
                                     <span className="w-2.5 h-2.5 rounded-full bg-[#2f68ea] animate-glow-pulse" />
@@ -183,7 +207,7 @@ export default function Home() {
                         <h2 className="m-0 text-[#f6f9ff] text-[clamp(24px,2.8vw,36px)] font-bold leading-tight animate-fade-up">
                             Simple Steps, Clear Output
                         </h2>
-                        <p className="mt-3 text-[clamp(14px,1.35vw,17px)] leading-relaxed text-[#0f172a] animate-fade-up-delay-1">
+                        <p className="mt-3 text-[clamp(14px,1.35vw,17px)] leading-relaxed font-sans font-semibold text-[#0f172a] animate-fade-up-delay-1">
                             Follow a short workflow to analyze role fit, detect skill gaps, and generate a practical interview preparation plan.
                         </p>
                     </div>
@@ -214,7 +238,7 @@ export default function Home() {
                                 <br />
                                 In One Place
                             </h2>
-                            <p className="mt-4 mx-auto max-w-3xl text-[clamp(14px,1.4vw,18px)] leading-relaxed text-[#0f172a] animate-fade-up-delay-1">
+                            <p className="mt-4 mx-auto max-w-3xl text-[clamp(14px,1.4vw,18px)] leading-relaxed font-sans font-semibold text-[#0f172a] animate-fade-up-delay-1">
                                 Keep job requirements, skill gap reports, ATS resume suggestions, and interview preparation roadmaps in one focused workspace.
                             </p>
 
@@ -227,20 +251,20 @@ export default function Home() {
                             </div>
                         </div>
 
-                        <div className="mt-11 border-t border-[rgba(255,255,255,0.22)] pt-9 sm:pt-11 grid gap-9 lg:grid-cols-[1.35fr_repeat(3,minmax(0,1fr))] text-left">
-                            <div className="animate-fade-up-delay-1">
-                                <div className="flex items-center gap-2.5 font-bold text-[clamp(20px,2.1vw,26px)] text-white">
+                        <div className="mt-11 border-t border-[rgba(255,255,255,0.22)] pt-9 sm:pt-11 grid items-start gap-9 lg:grid-cols-[1.35fr_repeat(3,minmax(0,1fr))] text-left">
+                            <div className="animate-fade-up-delay-1 self-start">
+                                <div className="flex items-center gap-2.5 font-bold text-[clamp(20px,2.1vw,26px)] leading-none text-white">
                                     <span className="w-2 h-2 rounded-full bg-white" />
                                     <span>InterviewAI</span>
                                 </div>
-                                <p className="mt-4 max-w-sm text-[clamp(13px,1.1vw,13px)]  leading-7 text-[#0f172a]">
+                                <p className="mt-4 max-w-sm text-[clamp(13px,1.1vw,13px)]  leading-7 font-sans font-semibold text-[#0f172a]">
                                     All your skill-gap insights, ATS resume improvements and role-based preparation plans in one place.
                                 </p>
                             </div>
 
                             <div className="animate-fade-up-delay-2">
                                 <div className="text-white text-[clamp(15px,1.15vw,17px)] font-bold mb-4">Product</div>
-                                <div className="grid gap-3 text-[clamp(14px,1.05vw,15px)] font-normal text-[#171d2c]">
+                                <div className="grid gap-3 text-[clamp(14px,1.05vw,15px)] font-sans font-normal text-[#171d2c]">
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">Skill Gap Analysis</span>
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">ATS Resume Match</span>
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">Preparation Roadmap</span>
@@ -249,7 +273,7 @@ export default function Home() {
 
                             <div className="animate-fade-up-delay-3">
                                 <div className="text-white text-[clamp(15px,1.15vw,17px)] font-bold mb-4">Company</div>
-                                <div className="grid gap-3 text-[clamp(14px,1.05vw,15px)] font-normal text-[#171d2c]">
+                                <div className="grid gap-3 text-[clamp(14px,1.05vw,15px)] font-sans font-normal text-[#171d2c]">
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">Role Intelligence</span>
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">Candidate Insights</span>
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">Interview Outcomes</span>
@@ -258,7 +282,7 @@ export default function Home() {
 
                             <div className="animate-fade-up-delay-4">
                                 <div className="text-white text-[clamp(15px,1.15vw,17px)] font-bold mb-4">Resources</div>
-                                <div className="grid gap-3 text-[clamp(14px,1.05vw,15px)] font-normal text-[#171d2c]">
+                                <div className="grid gap-3 text-[clamp(14px,1.05vw,15px)] font-sans font-normal text-[#171d2c]">
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">Roadmap Templates</span>
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">Resume Optimization Tips</span>
                                     <span className="inline-block w-fit cursor-pointer transition-colors duration-200 hover:text-white">Mock Interview Practice</span>
@@ -268,23 +292,23 @@ export default function Home() {
 
                     </section>
 
-                    <footer className="mt-7 pb-2 flex flex-col gap-4 md:flex-row md:items-center md:justify-between text-[14px] text-[#dbe7ff] animate-fade-up-delay-4">
+                    <footer className="mt-6 pb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between text-[15px] text-[#dbe7ff] animate-fade-up-delay-4">
                         <p className="m-0 text-white">© 2026 InterviewAI. All rights reserved.</p>
 
                         <div className="flex flex-wrap items-center justify-start md:justify-end gap-3 sm:gap-4 text-[#0f172a]">
-                            <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:opacity-80 transition-opacity">
+                            <a href="https://github.com/sankalppanchabhai123/Interview-AI-Api" rel="noreferrer" aria-label="GitHub" className="hover:opacity-80 transition-opacity">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M9 19c-4.5 1.5-4.5-2-6-2m12 4v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19 4.77 5.07 5.07 0 0 0 18.91 1S17.73.65 15 2.48a13.38 13.38 0 0 0-6 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.75c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
                                 </svg>
                             </a>
-                            <a href="https://www.linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:opacity-80 transition-opacity">
+                            <a href="https://www.linkedin.com/in/sankalp-panchabhai-26b359292/" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:opacity-80 transition-opacity">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4V8h4v2" />
                                     <rect x="2" y="9" width="4" height="12" />
                                     <circle cx="4" cy="4" r="2" />
                                 </svg>
                             </a>
-                            <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X" className="hover:opacity-80 transition-opacity">
+                            <a href="https://x.com/plaknas123" target="_blank" rel="noreferrer" aria-label="X" className="hover:opacity-80 transition-opacity">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <path d="M4 4l7.7 9.3M20 4l-7.7 9.3M6 20l6-6 6 6" />
                                 </svg>
@@ -296,6 +320,82 @@ export default function Home() {
                     </footer>
                 </section>
             </div>
+
+            {showSampleReport ? (
+                <div
+                    className="fixed inset-0 z-90 bg-[rgba(8,18,48,0.58)] backdrop-blur-xs overflow-y-auto px-4 py-6"
+                    onClick={closeSampleReport}
+                >
+                    <div
+                        className="w-[min(620px,100%)] mx-auto rounded-3xl border border-[rgba(255,255,255,0.38)] bg-[linear-gradient(150deg,rgba(227,237,255,0.94)_0%,rgba(176,201,250,0.93)_45%,rgba(138,173,241,0.92)_100%)] p-6 sm:p-8 text-left shadow-[0_26px_72px_rgba(3,10,34,0.52)] relative backdrop-blur-sm"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            onClick={closeSampleReport}
+                            className="absolute top-3.5 right-3.5 rounded-full border border-[rgba(15,23,42,0.24)] bg-[rgba(255,255,255,0.7)] px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-[#0b1327] cursor-pointer hover:bg-white transition-colors"
+                        >
+                            Close
+                        </button>
+
+                        <div className="pt-3">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(15,23,42,0.2)] bg-[rgba(255,255,255,0.62)] px-3 py-1 text-[11px] font-bold tracking-widest uppercase text-[#0b1327]">
+                                Mock Data Preview
+                            </div>
+
+                            <h3 className="mt-4 mb-1 text-[clamp(23px,2.6vw,31px)] font-bold text-[#0b1327] leading-tight">
+                                Sample Interview Report
+                            </h3>
+                            <p className="m-0 text-[14px] text-[#14213d] leading-relaxed">
+                                Role: {sampleReportData.topRole}
+                            </p>
+
+                            <div className="mt-5 grid grid-cols-3 gap-3">
+                                <div className="rounded-2xl border border-[rgba(15,23,42,0.14)] bg-[rgba(255,255,255,0.62)] px-3 py-3 text-center backdrop-blur-sm">
+                                    <div className="text-[10px] uppercase tracking-[0.12em] text-[#1f365f] font-bold">Match</div>
+                                    <div className="mt-1 text-[22px] font-black text-[#0b1327]">{sampleReportData.matchScore}%</div>
+                                </div>
+                                <div className="rounded-2xl border border-[rgba(15,23,42,0.14)] bg-[rgba(255,255,255,0.62)] px-3 py-3 text-center backdrop-blur-sm">
+                                    <div className="text-[10px] uppercase tracking-[0.12em] text-[#1f365f] font-bold">Tech Qs</div>
+                                    <div className="mt-1 text-[22px] font-black text-[#0b1327]">{sampleReportData.technicalQuestions}</div>
+                                </div>
+                                <div className="rounded-2xl border border-[rgba(15,23,42,0.14)] bg-[rgba(255,255,255,0.62)] px-3 py-3 text-center backdrop-blur-sm">
+                                    <div className="text-[10px] uppercase tracking-[0.12em] text-[#1f365f] font-bold">Behavioral</div>
+                                    <div className="mt-1 text-[22px] font-black text-[#0b1327]">{sampleReportData.behavioralQuestions}</div>
+                                </div>
+                            </div>
+
+                            <div className="mt-5 rounded-2xl border border-[rgba(15,23,42,0.14)] bg-[rgba(255,255,255,0.58)] p-4 backdrop-blur-sm">
+                                <div className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#1f365f]">Top Skill Gaps</div>
+                                <p className="mt-2 mb-0 text-[14px] leading-relaxed text-[#0b1327] font-medium">
+                                    {sampleReportData.skillGaps.join(" • ")}
+                                </p>
+                            </div>
+
+                            <div className="mt-4 rounded-2xl border border-[rgba(15,23,42,0.14)] bg-[rgba(255,255,255,0.58)] p-4 backdrop-blur-sm">
+                                <div className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#1f365f]">Sample Technical Question</div>
+                                <p className="mt-2 mb-0 text-[14px] leading-relaxed text-[#0b1327] font-medium">
+                                    {sampleReportData.sampleTechnicalQuestion}
+                                </p>
+                            </div>
+
+                            <div className="mt-4 rounded-2xl border border-[rgba(15,23,42,0.14)] bg-[rgba(255,255,255,0.58)] p-4 backdrop-blur-sm">
+                                <div className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#1f365f]">Sample Behavioral Question</div>
+                                <p className="mt-2 mb-0 text-[14px] leading-relaxed text-[#0b1327] font-medium">
+                                    {sampleReportData.sampleBehavioralQuestion}
+                                </p>
+                            </div>
+
+                            <div className="mt-4 rounded-2xl border border-[rgba(15,23,42,0.14)] bg-[rgba(255,255,255,0.58)] p-4 backdrop-blur-sm">
+                                <div className="text-[11px] font-bold tracking-[0.12em] uppercase text-[#1f365f]">Core Skills</div>
+                                <p className="mt-2 mb-0 text-[14px] leading-relaxed text-[#0b1327] font-medium">
+                                    {sampleReportData.coreSkills.join(" • ")}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            ) : null}
         </div>
     );
 }

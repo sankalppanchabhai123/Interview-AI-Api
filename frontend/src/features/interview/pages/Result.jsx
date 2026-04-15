@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { downloadResumePdf } from "../services/interview.api";
 
 const SparkleIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" />
         <path d="M19 16l.75 2.25L22 19l-2.25.75L19 22l-.75-2.25L16 19l2.25-.75L19 16z" />
         <path d="M5 16l.75 2.25L8 19l-2.25.75L5 22l-.75-2.25L2 19l2.25-.75L5 16z" />
@@ -71,9 +72,53 @@ const normalizeSkillGap = (item) => {
     };
 };
 
-const ReportBody = ({ data }) => {
+const extractDownloadErrorMessage = async (error) => {
+    const data = error?.response?.data;
+
+    if (data instanceof Blob) {
+        try {
+            const text = await data.text();
+            const parsed = JSON.parse(text);
+            return parsed?.error || parsed?.message || "Unable to download resume right now.";
+        } catch {
+            return "Unable to download resume right now.";
+        }
+    }
+
+    return data?.error || data?.message || "Unable to download resume right now.";
+};
+
+const ReportBody = ({ data, reportId = null }) => {
     const [activeSection, setActiveSection] = useState("technical");
     const [openQuestionIndex, setOpenQuestionIndex] = useState(null);
+    const [downloadingResume, setDownloadingResume] = useState(false);
+    const [downloadError, setDownloadError] = useState("");
+
+    const handleDownloadResume = async () => {
+        if (!reportId || downloadingResume) {
+            return;
+        }
+
+        setDownloadError("");
+        setDownloadingResume(true);
+
+        try {
+            const { blob } = await downloadResumePdf(reportId);
+            const objectUrl = window.URL.createObjectURL(blob);
+            const anchor = document.createElement("a");
+            anchor.href = objectUrl;
+            anchor.download = `Resume_${reportId}.pdf`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            window.URL.revokeObjectURL(objectUrl);
+        } catch (error) {
+            const message = await extractDownloadErrorMessage(error);
+            setDownloadError(message);
+        } finally {
+            setDownloadingResume(false);
+        }
+    };
 
     const sectionContent = {
         technical: {
@@ -118,7 +163,7 @@ const ReportBody = ({ data }) => {
 
             {/* Score Card */}
             <div className="mb-12">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 p-7 max-w-md mx-auto text-center">
+                <div className="bg-[rgba(214,228,255,0.16)] rounded-2xl border border-[rgba(205,224,255,0.26)] overflow-hidden p-7 max-w-md mx-auto text-center shadow-[0_10px_26px_rgba(12,31,79,0.15)]">
                     <div className="relative inline-block">
                         <svg className="w-36 h-36">
                             <circle
@@ -165,7 +210,7 @@ const ReportBody = ({ data }) => {
                                     key={section.id}
                                     type="button"
                                     onClick={() => setActiveSection(section.id)}
-                                    className={`text-left rounded-xl border px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${isActive
+                                    className={`text-left rounded-xl cursor-pointer border px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${isActive
                                         ? "bg-white text-[#101114] border-white shadow-[0_8px_18px_rgba(255,255,255,0.14)]"
                                         : "bg-[rgba(255,255,255,0.04)] text-white border-[rgba(255,255,255,0.16)] hover:bg-[rgba(255,255,255,0.1)]"
                                         }`}
@@ -174,6 +219,33 @@ const ReportBody = ({ data }) => {
                                 </button>
                             );
                         })}
+                    </div>
+
+                    <div className="mt-4 pt-4 border-t border-[rgba(205,224,255,0.28)]">
+                        <button
+                            type="button"
+                            onClick={handleDownloadResume}
+                            disabled={!reportId || downloadingResume}
+                            className={`w-full rounded-xl px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${!reportId || downloadingResume
+                                ? "bg-[rgba(255,255,255,0.1)] text-[#c5d8ff] border border-[rgba(255,255,255,0.16)] cursor-not-allowed"
+                                : "bg-[#2f68ea] text-white cursor-pointer hover-zoom hover:bg-[#1d59c9]"
+                                }`}
+                        >
+                            <span className="inline-flex items-center justify-center gap-2 w-full">
+                                <SparkleIcon />
+                                {downloadingResume ? "Preparing PDF..." : "Get AI Generated Resume"}
+                            </span>
+                        </button>
+                        {!reportId ? (
+                            <p className="mt-2 mb-0 text-[11px] text-[#dbe7ff] leading-relaxed">
+                                Open a saved/generated report first to enable resume download.
+                            </p>
+                        ) : null}
+                        {downloadError ? (
+                            <p className="mt-2 mb-0 text-[11px] text-[#ffd6d6] leading-relaxed">
+                                {downloadError}
+                            </p>
+                        ) : null}
                     </div>
                 </aside>
 
@@ -267,7 +339,7 @@ const ReportBody = ({ data }) => {
                 </main>
 
                 <aside className="bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(212,228,255,0.16)_100%)] border border-[rgba(205,224,255,0.32)] rounded-[20px] p-5 shadow-[0_12px_28px_rgba(4,10,35,0.15)]">
-                    <div className="text-xs font-semibold tracking-[0.22em] uppercase text-[#1d469f] mb-4 flex items-center gap-2">
+                    <div className="text-xs font-bold tracking-[0.22em] uppercase text-[#000000] mb-4 flex items-center gap-2">
                         <BoltIcon />
                         Skill Gaps
                     </div>
@@ -299,21 +371,11 @@ const ReportBody = ({ data }) => {
                 </aside>
             </div>
 
-            {/* Road Map Section */}
-            <div className="mb-10">
-                <div className="bg-white border border-black/20 rounded-xl overflow-hidden hover:border-black/40 transition-all duration-300">
-                    <div className="px-6 py-4 bg-white border-b border-black/15">
-                        <h2 className="text-xl font-semibold text-[#101114]">Report Summary</h2>
-                    </div>
-                    <div className="p-5 text-sm text-[#7f8792] leading-relaxed">
-                        Click a section on the left to load its content in the main panel. Your skill gaps remain visible on the right for quick reference.
-                    </div>
-                </div>
-            </div>
+
 
             {/* Footer Note */}
             <div className="mt-12 pt-8 text-center border-t border-black/15">
-                <p className="text-sm text-[#7f8792]">
+                <p className="text-sm text-[#000000]">
                     This assessment is designed to guide your preparation and highlight areas for continued growth
                 </p>
             </div>
@@ -321,7 +383,7 @@ const ReportBody = ({ data }) => {
     );
 };
 
-const InterviewReport = ({ reportData, inline = false }) => {
+const InterviewReport = ({ reportData, inline = false, reportId = null }) => {
     const location = useLocation();
     const data = reportData || location?.state?.reportData || {
         matchScore: 85,
@@ -363,7 +425,7 @@ const InterviewReport = ({ reportData, inline = false }) => {
     };
 
     if (inline) {
-        return <ReportBody data={data} />;
+        return <ReportBody data={data} reportId={reportId} />;
     }
 
     return (
@@ -373,7 +435,7 @@ const InterviewReport = ({ reportData, inline = false }) => {
             <div className="pointer-events-none absolute -bottom-24 -right-20 w-md h-112 rounded-full bg-[radial-gradient(circle,rgba(68,114,229,0.2)_0%,transparent_70%)]" />
 
             <div className="max-w-6xl mx-auto relative z-10">
-                <ReportBody data={data} />
+                <ReportBody data={data} reportId={reportId} />
             </div>
         </div>
     );

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { generateInterviewReport, getMyInterviewReports } from "../services/interview.api";
 import InterviewReport from "./Result";
@@ -147,6 +147,10 @@ const ReportForm = () => {
     const canSubmit = filledCount === 3 && !loading;
 
     useEffect(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }, []);
+
+    useEffect(() => {
         let isMounted = true;
 
         const loadReports = async () => {
@@ -275,16 +279,19 @@ const ReportForm = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#3f73e8] font-['Poppins',sans-serif] text-white p-[clamp(14px,2vw,22px)_clamp(12px,2vw,20px)_28px] relative overflow-hidden">
+        <div className="min-h-screen bg-[#3f73e8] font-['Poppins',sans-serif] text-white p-[clamp(14px,2vw,22px)_clamp(12px,2vw,20px)_20px] relative overflow-x-hidden">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
+                <div className="absolute -top-[14%] -left-[8%] w-125 h-125 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12)_0%,transparent_70%)] animate-float-soft" />
+                <div className="absolute -bottom-[16%] -right-[7%] w-100 h-100 rounded-full bg-[radial-gradient(circle,rgba(18,35,96,0.08)_0%,transparent_70%)] animate-float-soft" />
+            </div>
             <div className="max-w-265 mx-auto relative pt-20 sm:pt-22">
-                <div className="absolute -top-[14%] -left-[8%] w-125 h-125 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12)_0%,transparent_70%)] pointer-events-none animate-float-soft" />
-                <div className="absolute -bottom-[16%] -right-[7%] w-100 h-100 rounded-full bg-[radial-gradient(circle,rgba(18,35,96,0.08)_0%,transparent_70%)] pointer-events-none animate-float-soft" />
-
                 <header className="fixed top-5 left-1/2 z-50 w-[min(1100px,calc(100%-1.5rem))] -translate-x-1/2 min-h-12.5 rounded-full bg-[rgba(164,189,255,0.42)] backdrop-blur-[6px] shadow-[0_10px_30px_rgba(6,25,78,0.18),inset_0_1px_0_rgba(255,255,255,0.32)] border border-[rgba(221,233,255,0.32)] flex items-center justify-between p-[5px_clamp(16px,2.2vw,26px)] gap-1 animate-fade-up">
-                    <div className="flex items-center gap-1.5 font-bold text-[clamp(17px,2vw,24px)] tracking-[0.2px] text-[#f7fbff] animate-fade-up-delay-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#f2f6ff] shadow-[0_0_0_4px_rgba(255,255,255,0.06)] animate-glow-pulse" />
-                        <span>InterviewAI</span>
-                    </div>
+                    <Link to="/" className="no-underline">
+                        <div className="flex items-center gap-1.5 font-bold text-[clamp(17px,2vw,24px)] tracking-[0.2px] text-[#f7fbff] animate-fade-up-delay-1 cursor-pointer hover:opacity-80 transition-opacity">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#f2f6ff] shadow-[0_0_0_4px_rgba(255,255,255,0.06)] animate-glow-pulse" />
+                            <span>InterviewAI</span>
+                        </div>
+                    </Link>
 
                     <div className="flex items-center gap-2">
                         <button
@@ -305,17 +312,17 @@ const ReportForm = () => {
                     </div>
                 </header>
 
-                <section className="mt-[clamp(28px,2vw,70px)] max-w-4xl mx-auto text-center px-2.5 animate-fade-up">
-                    <h1 className="m-0 text-[#f6f9ff] text-[clamp(30px,4vw,52px)] font-bold leading-tight">
-                        Build Your Interview Input <span className="font-black text-black">Packet</span>
+                <section className="mt-[clamp(28px,2vw,70px)] max-w-5xl mx-auto text-center px-2.5 animate-fade-up">
+                    <h1 className="m-0 text-[#f6f9ff] text-[clamp(28px,3.4vw,48px)] font-bold leading-tight sm:whitespace-nowrap">
+                        Build Your Interview Input <span className="font-black text-black inline-block">Packet</span>
                     </h1>
-                    <p className="mt-3 mb-0 text-[clamp(14px,1.5vw,19px)] leading-relaxed text-[#0f172a] max-w-3xl mx-auto">
+                    <p className="mt-3 mb-0 text-[clamp(14px,1.5vw,19px)] leading-relaxed font-sans font-semibold text-[#0f172a] max-w-3xl mx-auto">
                         Share your job description, resume, and profile summary to generate a personalized interview report
                         with match score, likely questions, skill gaps, and a preparation roadmap.
                     </p>
                 </section>
 
-                <section ref={formRef} className="mt-8 sm:mt-10 mx-auto w-[min(760px,100%)] rounded-[28px] border border-[rgba(255,255,255,0.34)] bg-[rgba(208,225,255,0.2)] backdrop-blur-sm shadow-[0_16px_35px_rgba(17,42,107,0.2),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-[6px] p-[clamp(16px,3vw,30px)] animate-fade-up-delay-1">
+                <section ref={formRef} className="mt-8 sm:mt-10 mx-auto w-[min(760px,100%)] scroll-mt-28 sm:scroll-mt-32 rounded-[28px] border border-[rgba(255,255,255,0.34)] bg-[rgba(208,225,255,0.2)] shadow-[0_16px_35px_rgba(17,42,107,0.2),inset_0_1px_0_rgba(255,255,255,0.18)] backdrop-blur-[6px] p-[clamp(16px,3vw,30px)] animate-fade-up-delay-1">
                     <h2 className="m-0 text-[#f6f9ff] text-[clamp(20px,2.1vw,28px)] font-bold animate-fade-up">
                         <span className="font-black text-[#071230]">Interview Input Form</span>
                     </h2>
@@ -426,7 +433,7 @@ const ReportForm = () => {
                 </section>
 
                 {reportData ? (
-                    <section ref={reportPreviewRef} className="mt-8 sm:mt-10 rounded-[28px] border border-[rgba(205,224,255,0.4)] bg-[rgba(208,225,255,0.22)] backdrop-blur-sm p-[clamp(16px,3vw,30px)] shadow-[0_18px_40px_rgba(17,42,107,0.18)] animate-fade-up">
+                    <section ref={reportPreviewRef} className="mt-8 sm:mt-10 scroll-mt-28 sm:scroll-mt-32 rounded-[28px] border-x border-b border-[rgba(205,224,255,0.4)] bg-[rgba(208,225,255,0.22)] overflow-hidden p-[clamp(16px,3vw,30px)] shadow-[0_18px_40px_rgba(17,42,107,0.18)] animate-fade-up">
                         <div className="flex items-center justify-between gap-3 mb-5 flex-wrap">
                             <div>
                                 <h2 className="m-0 text-[clamp(22px,2.6vw,34px)] font-bold text-[#f6f9ff] leading-tight">
@@ -440,14 +447,14 @@ const ReportForm = () => {
                             <button
                                 type="button"
                                 onClick={handleGenerateNewReport}
-                                className="border-none rounded-full bg-[#2f68ea] text-white px-4 py-2 text-sm font-semibold shadow-[0_10px_25px_rgba(15,23,42,0.24)] hover:opacity-90"
+                                className="border-none cursor-pointer  rounded-full bg-[#2f68ea] text-white px-4 py-2 text-sm font-semibold shadow-[0_10px_25px_rgba(15,23,42,0.24)] hover:opacity-90"
                             >
                                 Back to Form
                             </button>
                         </div>
 
                         <div className="animate-fade-up-delay-1">
-                            <InterviewReport reportData={reportData} inline />
+                            <InterviewReport reportData={reportData} reportId={activeReportId} inline />
                         </div>
                     </section>
                 ) : null}
@@ -495,14 +502,29 @@ const ReportForm = () => {
                                         key={report?._id}
                                         type="button"
                                         onClick={() => openSavedReport(report)}
-                                        className={`group flex h-full flex-col text-left rounded-[20px] border p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(17,42,107,0.22)] ${isActive
-                                            ? "border-[rgba(255,255,255,0.42)] bg-[rgba(47,104,234,0.26)] shadow-[0_14px_28px_rgba(255,255,255,0.12)]"
-                                            : "border-[rgba(205,224,255,0.28)] bg-[rgba(47,104,234,0.16)]"
+                                        className={`group relative isolate overflow-hidden flex h-full flex-col text-left rounded-[22px] border p-4 sm:p-5 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_22px_40px_rgba(17,42,107,0.28)] ${isActive
+                                            ? "border-[rgba(255,255,255,0.5)] bg-[linear-gradient(160deg,rgba(86,136,242,0.45)_0%,rgba(57,106,218,0.5)_55%,rgba(27,67,165,0.54)_100%)] shadow-[0_16px_32px_rgba(255,255,255,0.14)]"
+                                            : "border-[rgba(205,224,255,0.3)] bg-[linear-gradient(165deg,rgba(89,139,244,0.42)_0%,rgba(62,112,224,0.46)_50%,rgba(29,72,178,0.5)_100%)]"
                                             }`}
                                     >
-                                        <div className="flex items-start justify-between gap-3">
+                                        <div className="pointer-events-none absolute inset-0 opacity-65">
+                                            <div className="absolute -top-8 -right-7 w-20 h-20 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,transparent_70%)]" />
+                                            <div className="absolute -bottom-10 -left-5 w-24 h-24 rounded-full bg-[radial-gradient(circle,rgba(16,40,106,0.25)_0%,transparent_72%)]" />
+                                        </div>
+
+                                        <div className="relative z-10 mb-4 flex items-center justify-between gap-3">
+                                            <div className="inline-flex items-center gap-2 rounded-full border border-[rgba(205,224,255,0.38)] bg-[rgba(255,255,255,0.12)] px-2.5 py-1 text-[10px] font-bold tracking-[0.14em] uppercase text-[#e8f0ff]">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-white/90" />
+                                                Saved Report
+                                            </div>
+                                            <span className="text-[11px] font-semibold tracking-[0.12em] uppercase text-[#f4f8ff]">
+                                                {isActive ? "Open now" : "Open"}
+                                            </span>
+                                        </div>
+
+                                        <div className="relative z-10 flex items-start justify-between gap-3">
                                             <div>
-                                                <p className="m-0 text-[12px] font-bold tracking-[0.16em] uppercase text-[#dbe7ff]">
+                                                <p className="m-0 text-[12px] font-bold tracking-[0.16em] uppercase text-[#02183d]">
                                                     {formatReportDate(report?.createdAt)}
                                                 </p>
                                                 <h3 className="mt-2 mb-0 text-[18px] font-bold text-[#f6f9ff] leading-snug group-hover:text-white">
@@ -514,24 +536,26 @@ const ReportForm = () => {
                                             </div>
                                         </div>
 
-                                        <div className="mt-4 grid grid-cols-3 gap-2 items-stretch">
-                                            <div className="min-h-18 rounded-[14px] border border-[rgba(205,224,255,0.32)] bg-[rgba(255,255,255,0.14)] px-3 py-2 flex flex-col items-start justify-between text-left">
-                                                <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#e8f0ff]">Tech</div>
-                                                <div className="mt-1 text-sm font-semibold text-white">{technicalCount}</div>
+                                        <div className="relative z-10 mt-4 grid grid-cols-3 gap-2 items-stretch">
+                                            <div className="min-h-18 rounded-[14px] border border-[rgba(205,224,255,0.34)] bg-[rgba(255,255,255,0.16)] px-3 py-2 flex flex-col items-start justify-between text-left">
+                                                <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#f2f7ff]">Tech</div>
+                                                <div className="mt-1 text-base font-extrabold text-white">{technicalCount}</div>
                                             </div>
-                                            <div className="min-h-18 rounded-[14px] border border-[rgba(205,224,255,0.32)] bg-[rgba(255,255,255,0.14)] px-3 py-2 flex flex-col items-start justify-between text-left">
-                                                <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#e8f0ff]">Behavior</div>
-                                                <div className="mt-1 text-sm font-semibold text-white">{behavioralCount}</div>
+                                            <div className="min-h-18 rounded-[14px] border border-[rgba(205,224,255,0.34)] bg-[rgba(255,255,255,0.16)] px-3 py-2 flex flex-col items-start justify-between text-left">
+                                                <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#f2f7ff]">Behavior</div>
+                                                <div className="mt-1 text-base font-extrabold text-white">{behavioralCount}</div>
                                             </div>
-                                            <div className="min-h-18 rounded-[14px] border border-[rgba(205,224,255,0.32)] bg-[rgba(255,255,255,0.14)] px-3 py-2 flex flex-col items-start justify-between text-left">
-                                                <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#e8f0ff]">Gaps</div>
-                                                <div className="mt-1 text-sm font-semibold text-white">{skillCount}</div>
+                                            <div className="min-h-18 rounded-[14px] border border-[rgba(205,224,255,0.34)] bg-[rgba(255,255,255,0.16)] px-3 py-2 flex flex-col items-start justify-between text-left">
+                                                <div className="text-[10px] font-bold tracking-[0.14em] uppercase text-[#f2f7ff]">Gaps</div>
+                                                <div className="mt-1 text-base font-extrabold text-white">{skillCount}</div>
                                             </div>
                                         </div>
 
-                                        <div className="mt-auto flex items-center justify-between gap-3 pt-2 text-sm text-[#dbe7ff]">
+                                        <div className="relative z-10 mt-auto flex items-center justify-between gap-3 pt-3 text-sm text-[#03122b]">
                                             <span>{isActive ? "Currently open" : "Click to open report"}</span>
-                                            <span className="transition-transform duration-300 group-hover:translate-x-1">View</span>
+                                            <span className="inline-flex items-center gap-1.5 rounded-full border text-[#fdfeff] border-[rgba(205,224,255,0.36)] bg-[rgba(255,255,255,0.14)] px-2.5 py-1 text-[11px] font-bold tracking-[0.12em] uppercase transition-transform duration-300 group-hover:translate-x-1">
+                                                View
+                                            </span>
                                         </div>
                                     </button>
                                 );
@@ -566,7 +590,7 @@ const ReportForm = () => {
                                 <div className="w-7 h-7 rounded-full bg-[#dce6fb] shadow-[inset_0_0_0_1px_rgba(26,42,73,0.14)] flex items-center justify-center">
                                     <span className="w-2 h-2 rounded-full bg-[#2f68ea]" />
                                 </div>
-                                <h3 className="mt-3 mb-2 text-[17px] font-bold text-[#0e192e] leading-snug">{item.title}</h3>
+                                <h3 className="mt-3 mb-2 text-[17px] font-bold text-[#0a2350] leading-snug">{item.title}</h3>
                                 <p className="m-0 text-[14px] leading-6 text-[#dbe7ff]">{item.description}</p>
                             </article>
                         ))}
@@ -575,27 +599,26 @@ const ReportForm = () => {
 
                 <footer className="mt-8 sm:mt-10 pb-2 flex flex-col gap-4 md:flex-row md:items-center md:justify-between text-[14px] text-[#dbe7ff] animate-fade-up-delay-4">
                     <p className="m-0 text-white">© 2026 InterviewAI. All rights reserved.</p>
-
                     <div className="flex flex-wrap items-center justify-start md:justify-end gap-3 sm:gap-4 text-[#0f172a]">
-                        <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:opacity-80 transition-opacity">
+                        <a href="https://github.com/sankalppanchabhai123/Interview-AI-Api" rel="noreferrer" aria-label="GitHub" className="hover:opacity-80 transition-opacity">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M9 19c-4.5 1.5-4.5-2-6-2m12 4v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19 4.77 5.07 5.07 0 0 0 18.91 1S17.73.65 15 2.48a13.38 13.38 0 0 0-6 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.75c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
                             </svg>
                         </a>
-                        <a href="https://www.linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:opacity-80 transition-opacity">
+                        <a href="https://www.linkedin.com/in/sankalp-panchabhai-26b359292/" target="_blank" rel="noreferrer" aria-label="LinkedIn" className="hover:opacity-80 transition-opacity">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4V8h4v2" />
                                 <rect x="2" y="9" width="4" height="12" />
                                 <circle cx="4" cy="4" r="2" />
                             </svg>
                         </a>
-                        <a href="https://x.com" target="_blank" rel="noreferrer" aria-label="X" className="hover:opacity-80 transition-opacity">
+                        <a href="https://x.com/plaknas123" target="_blank" rel="noreferrer" aria-label="X" className="hover:opacity-80 transition-opacity">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M4 4l7.7 9.3M20 4l-7.7 9.3M6 20l6-6 6 6" />
                             </svg>
                         </a>
                         <span className="ml-3 flex items-center gap-1 font-bold text-[#0f172a]">
-                            Build with <span className="text-red-500">♥</span> by Sankalp
+                            Build with <span className="text-red-500 font-bold">♥</span> by Sankalp
                         </span>
                     </div>
                 </footer>
